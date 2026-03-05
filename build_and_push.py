@@ -31,7 +31,6 @@ def download_pdf(url: str, dest: Path) -> None:
 
 
 def parse_table_from_pdf(pdf_path: Path) -> pd.DataFrame:
-    rows = []
     with pdfplumber.open(pdf_path) as pdf:
         lines = (pdf.pages[0].extract_text() or "").splitlines()
 
@@ -40,27 +39,19 @@ def parse_table_from_pdf(pdf_path: Path) -> pd.DataFrame:
         if line.strip().startswith("Mes") and "Fecha" in line and "Regata" in line:
             header_idx = i
             break
+
     if header_idx is None:
         raise RuntimeError("No se encontró el encabezado de la tabla en el PDF.")
 
-    for line in lines[header_idx + 1 :]:
+    eventos = []
+
+    for line in lines[header_idx + 1:]:
         line = line.strip()
         if not line:
             continue
+        eventos.append(line)
 
-        parts = re.split(r"\s{2,}", line)
-
-        if len(parts) < 8:
-            parts = parts + [""] * (8 - len(parts))
-        elif len(parts) > 8:
-            parts = parts[:7] + [" ".join(parts[7:])]
-
-        rows.append(parts)
-
-    df = pd.DataFrame(rows, columns=COLUMNS).fillna("")
-    for c in COLUMNS:
-        df[c] = df[c].astype(str).str.strip()
-    return df
+    return pd.DataFrame({"Evento": eventos})
 
 
 def build_html(df: pd.DataFrame) -> str:
