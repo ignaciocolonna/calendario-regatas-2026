@@ -44,7 +44,6 @@ def parse_table_from_pdf(pdf_path: Path) -> pd.DataFrame:
         raise RuntimeError("No se encontró el encabezado de la tabla en el PDF.")
 
     eventos = []
-
     for line in lines[header_idx + 1:]:
         line = line.strip()
         if not line:
@@ -52,7 +51,6 @@ def parse_table_from_pdf(pdf_path: Path) -> pd.DataFrame:
         eventos.append(line)
 
     return pd.DataFrame({"Evento": eventos})
-
 
 def build_html(df: pd.DataFrame) -> str:
     table_html = df.to_html(index=False, escape=True, classes="display", table_id="cal")
