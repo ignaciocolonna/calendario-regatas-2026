@@ -102,10 +102,8 @@ def main():
 
     # 4) commit + push
     print("4) Commit + push…")
-    run(["git", "add", "docs"])
-    # si no hay cambios, git commit devuelve error; lo evitamos chequeando status
-    status = subprocess.check_output(["git", "status", "--porcelain"], cwd=REPO_ROOT).decode("utf-8").strip()
-    if not status:
+    run(["git", "add", "-A"])
+    status = subprocess.check_output(["git", "status", "--porcelain"], cwd=REPO_ROOT).decode("utf-8").strip()    if not status:
         print("No hay cambios para commitear.")
         return
 
